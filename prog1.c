@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <stdlib.h>
+#include "linebreaker.h"
 
 #define ARRAYSIZE 1000
-#define THREADS 2
+// #define THREADS 2
 
 void *slave(void *myid);
 
@@ -29,19 +31,19 @@ void *slave(void *myid)
 	pthread_mutex_unlock(&mutex);
 }
 
-void main(int argc, char *argv[]) {
+void handler(int THREADS) {
 	struct timeval start,end;
 	int i;
 	pthread_t tid[THREADS];
+
+	// initialize sum
+	sum = 0;
 	// initialize mutex
 	pthread_mutex_init(&mutex,NULL);
 
 	wsize = ARRAYSIZE/THREADS;
 
-	// populate the array with junk data
-	for (i=0; i<ARRAYSIZE;i++)
-		data[i] = i+1;
-
+	// create threads
 	gettimeofday(&start, NULL);
 	for (i=0;i<THREADS;i++)
 		if (pthread_create(&tid[i],NULL,slave,(void *)(__intptr_t)i) != 0)
@@ -59,4 +61,38 @@ void main(int argc, char *argv[]) {
 
 	printf("The sum from 1 to %i is %d\n",ARRAYSIZE,sum);
 	printf("Execution time: %.6f seconds\n", elapsed);
+}
+
+void main(int argc, char *argv[]) {
+	if (argc < 2)
+	{
+		printf("please provide the max number of threads to consider\n");
+		printf("for example:\n");
+		printf("\t$>./prog1.o 10\n");
+		printf("-will executes the sum of array values with 1 threads to up until 10 threads\n");
+		return;
+	}
+
+	int to_threads = atoi(argv[1]);
+
+	if (to_threads <= 0)
+	{
+		printf("negative thread count is not valid: %d\n",to_threads);
+	}
+
+	int i;
+	// populate the array with junk data
+	for (i=0; i<ARRAYSIZE;i++)
+		data[i] = i+1;
+
+	line_break(30);
+	for (i=1; i<= to_threads; i++)
+	{
+		printf("thread count will be used:%d\n",i);
+		if (ARRAYSIZE%i == 0)
+			handler(i);
+		else
+			printf("skipping since array size(%d) can't exactly divide by thread count\n",ARRAYSIZE);
+		line_break(30);
+	}
 }
