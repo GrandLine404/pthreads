@@ -17,7 +17,7 @@ void *slave(void *myid)
 {
 	int i,low,high,myresult=0;
 
-	low = (int) myid * wsize;
+	low = (int)(__intptr_t) myid * wsize;
 	high = low + wsize;
 
 	for (i=low; i<high;i++)
@@ -44,7 +44,7 @@ void main(int argc, char *argv[]) {
 
 	gettimeofday(&start, NULL);
 	for (i=0;i<THREADS;i++)
-		if (pthread_create(&tid[i],NULL,slave,(void *)i) != 0)
+		if (pthread_create(&tid[i],NULL,slave,(void *)(__intptr_t)i) != 0)
 			perror("Pthread create fails");
 	
 	// join threads
