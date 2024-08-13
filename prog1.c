@@ -85,7 +85,7 @@ void main(int argc, char *argv[]) {
 	for (i=0; i<ARRAYSIZE;i++)
 		data[i] = i+1;
 
-	line_break(30);
+	nline_break(30);
 	for (i=1; i<= to_threads; i++)
 	{
 		printf("thread count will be used:%d\n",i);
@@ -93,6 +93,6 @@ void main(int argc, char *argv[]) {
 			handler(i);
 		else
 			printf("skipping since array size(%d) can't exactly divide by thread count\n",ARRAYSIZE);
-		line_break(30);
+		nline_break(30);
 	}
 }
